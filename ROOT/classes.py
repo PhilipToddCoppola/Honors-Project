@@ -1,16 +1,19 @@
 
 
+
 from __future__ import division
 from visual import *
 
 class Cell():                                  
     def __init__(self,p_x,p_y,p_z, rad, material, color): 
         position = vector(p_x,p_y,p_z)
-        self.c = sphere(pos=position, radius = rad, material = material, color=color)
+        #self.c = sphere(pos=position, radius = rad, material = material, color=color)
+        self.c = ellipsoid(pos=position, axis=(0,1,0), length=3*rad, height=rad, width=rad, material = material, color = color)
         self.t = 0
     def move(self,deltat, v_x,v_y,v_z):
         current_pos = self.c.pos
         new_pos = current_pos + deltat*vector(v_x,v_y,v_z)          #(placeholder for the moment)
+        #new_pos = current_pos + deltat*velocity*vector(v_x,v_y,v_z) replace veolcity with data from the paper  http://www.plantphysiol.org/content/116/4/1515
         self.c.pos = new_pos
         self.t = self.t + deltat
     def clear(self):
@@ -35,13 +38,6 @@ class Tissue():
         for i in range(len(self.cell_list)-1, -1, -1):              # moves down the length of the list where the cells info is stored
             cell = self.cell_list[i]                                # saves it into a variable called cell
             cell.move(deltat,v_x,v_y,v_z)                           # calls the .move method to update the position of the cells (i.e moving upward
-
-            if cell.c.pos[1] > 7:
-                if int(self.t/deltat) % 28 == 0:
-                    cell2 = Cell(0,7,0,1.5,materials.rough, color.red)
-                    cell3 = Cell(0,7,0,1.5,materials.rough, color.red)
-                    cell2.move(deltat,v_x2,v_y2,v_z2)
-                    cell3.move(deltat,v_x3,v_y3,v_z3)
             if cell.c.pos[1]>23:                                    # when the y position reaches a specified value...
                 cell.clear()                                        # ...call the clear method which deletes the physical sphere...
                 del cell                                            # ...the cell object ...
@@ -106,6 +102,9 @@ if cell.c.pos[1] == 7:
     if int(self.t/deltat) % 28 == 0:
         cell2 = Cell(0,5,0,1.5,materials.rough, color.yellow)
         root.add_cell(cell2)
+
+
+                                                                    possible use of ellipsoids rather than spheres???
 '''
 
 
