@@ -1,6 +1,3 @@
-
-
-
 from __future__ import division
 from visual import *
 
@@ -8,7 +5,7 @@ class Cell():
     def __init__(self,p_x,p_y,p_z, rad, material, color): 
         position = vector(p_x,p_y,p_z)
         #self.c = sphere(pos=position, radius = rad, material = material, color=color)
-        self.c = ellipsoid(pos=position, axis=(0,1,0), length=3*rad, height=rad, width=rad, material = material, color = color)
+        self.c = ellipsoid(pos=position, axis=(0,1,0), length=2*rad, height=rad, width=rad, material = material, color = color)
         self.t = 0
     def move(self,deltat, v_x,v_y,v_z):
         current_pos = self.c.pos
@@ -28,17 +25,24 @@ class Tissue():
     # will append new cells into the list
     def add_cell(self,cell):
         self.cell_list.append(cell)
-    def grow(self,deltat, v_x,v_y,v_z,v_x2,v_y2,v_z2,v_x3,v_y3,v_z3):
+    def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z):
         # New cells are being initiated
-        if int(self.t/deltat) % 28 == 0:                            #creates a cell when the remainder of the calculation in points of 20 is 0
-            cell = Cell(0,-5,0,1.5,materials.rough, color.yellow)   #creates the cell
+        if int(self.t/deltat) % 28 == 0:                            #creates a cell when the remainder of the calculation in points of 28 is 0
+            cell = Cell(p_x,p_y,p_z,1.5,materials.rough, color.yellow)   #creates the cell
             root.add_cell(cell)                                     #calls the add_cell method and places the new cells into the list
 
         # Existing cells are moving
         for i in range(len(self.cell_list)-1, -1, -1):              # moves down the length of the list where the cells info is stored
             cell = self.cell_list[i]                                # saves it into a variable called cell
             cell.move(deltat,v_x,v_y,v_z)                           # calls the .move method to update the position of the cells (i.e moving upward
-            if cell.c.pos[1]>23:                                    # when the y position reaches a specified value...
+
+            if cell.c.pos[1] > 3:                                    #rudimentary velocity change and cell growth              
+                v_y +=0.8
+                cell.c.length += 0.03   
+                cell.c.height += 0.01
+                cell.c.width += 0.01
+
+            if cell.c.pos[1]>46:                                    # when the y position reaches a specified value...
                 cell.clear()                                        # ...call the clear method which deletes the physical sphere...
                 del cell                                            # ...the cell object ...
                 del self.cell_list[i]                               # ...and the data in the list
@@ -46,15 +50,15 @@ class Tissue():
         # update time
         self.t = self.t + deltat
         
-
 screen = display(title='Root Development Model', width=640, height=720, autoscale = False, center = (0,7,0))
-root_shadow = cone(pos=(0,25,0), axis=(0,-50,0),radius=10, material=materials.rough, color=color.green, opacity=0.4)
+root_shadow = cone(pos=(0,50,0), axis=(0,-75,0),radius=10, material=materials.rough, color=color.green, opacity=0.4)
+
 
   
 root = Tissue()
 
 for i in range(10000):
-    root.grow(0.1,0,1,0,-16,1,0,16,1,0)
+    root.grow(0.1,0,-5,0,0.35,1,0)
     rate(75)
 '''   
 Go = True                           #CONTINUOUS RUNNING (slightly more cpu usage)
@@ -63,7 +67,13 @@ while Go == True:
     rate(75)
 '''
 
+
+
+
+
 '''
+DONE!!
+
 implementation of cell elongation. Possible routes:
 
 1 - add in multiple cells at one location to elongate later
@@ -104,7 +114,7 @@ if cell.c.pos[1] == 7:
         root.add_cell(cell2)
 
 
-                                                                    possible use of ellipsoids rather than spheres???
+                                                                    possible use of ellipsoids rather than spheres??? .... yep
 '''
 
 
