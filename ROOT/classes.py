@@ -1,21 +1,34 @@
+
 from __future__ import division
 from visual import *
+import math
+import pylab as plt
+import numpy as np
+# Model paramters
+vmax = 400.     # maximum cell velocity
+                # data derived from Beemster and baskin
+                # 5 um/s = 2mm/h
+                
+a = 1./5.      # slope of the lgositic function
+b = 20+1100.*0.        # offset of the logistic function
 
 class Cell():                                  
-    def __init__(self,p_x,p_y,p_z, rad, material, color): 
+    def __init__(self,p_x,p_y,p_z,rad, material, color): 
         position = vector(p_x,p_y,p_z)
         #self.c = sphere(pos=position, radius = rad, material = material, color=color)
         self.c = ellipsoid(pos=position, axis=(0,1,0), length=2*rad, height=rad, width=rad, material = material, color = color)
         self.t = 0
-    def move(self,deltat, v_x,v_y,v_z):
+
+    def velocity(self,x):
+        return vmax/(1. + math.exp(-a*(x-b)))
+    def move(self,deltat,v_x,v_y,v_z):
         current_pos = self.c.pos
-        new_pos = current_pos + deltat*vector(v_x,v_y,v_z)          #(placeholder for the moment)
-        #new_pos = current_pos + deltat*velocity*vector(v_x,v_y,v_z) replace veolcity with data from the paper  http://www.plantphysiol.org/content/116/4/1515
+        #new_pos = current_pos + deltat*vector(v_x,v_y,v_z)                     (placeholder for the moment)
+        new_pos = current_pos + deltat*self.velocity(self.c.pos[1])*vector(v_x,v_y,v_z)     # get x value to be varied in the self.velocity code bit. replace veolcity with data from the paper  http://www.plantphysiol.org/content/116/4/1515
         self.c.pos = new_pos
         self.t = self.t + deltat
     def clear(self):
         del self.c
-
 
 class Tissue():
     #initialises the list where cells will be saved.
@@ -27,39 +40,48 @@ class Tissue():
         self.cell_list.append(cell)
     def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z):
         # New cells are being initiated
-        if int(self.t/deltat) % 28 == 0:                            #creates a cell when the remainder of the calculation in points of 28 is 0
-            cell = Cell(p_x,p_y,p_z,1.5,materials.rough, color.yellow)   #creates the cell
+        if int(self.t/deltat) % 10 == 0:                            #creates a cell when the remainder of the calculation in points of 28 is 0
+            cell = Cell(p_x,p_y,p_z,1,materials.rough, color.yellow)   #creates the cell
             root.add_cell(cell)                                     #calls the add_cell method and places the new cells into the list
+
 
         # Existing cells are moving
         for i in range(len(self.cell_list)-1, -1, -1):              # moves down the length of the list where the cells info is stored
             cell = self.cell_list[i]                                # saves it into a variable called cell
             cell.move(deltat,v_x,v_y,v_z)                           # calls the .move method to update the position of the cells (i.e moving upward
-
-            if cell.c.pos[1] > 3:                                    #rudimentary velocity change and cell growth              
-                v_y +=0.8
-                cell.c.length += 0.03   
+            '''
+            if cell.c.pos[1] > 3:                                   #rudimentary velocity change and cell growth              
+                v_y +=0.08
+                cell.c.length +=0.08   
                 cell.c.height += 0.01
                 cell.c.width += 0.01
-
-            if cell.c.pos[1]>46:                                    # when the y position reaches a specified value...
+                pass
+            '''
+            if cell.c.pos[1]> 48:                                    # when the y position reaches a specified value...
                 cell.clear()                                        # ...call the clear method which deletes the physical sphere...
                 del cell                                            # ...the cell object ...
                 del self.cell_list[i]                               # ...and the data in the list
-            
         # update time
         self.t = self.t + deltat
         
-screen = display(title='Root Development Model', width=640, height=720, autoscale = False, center = (0,7,0))
-root_shadow = cone(pos=(0,50,0), axis=(0,-75,0),radius=10, material=materials.rough, color=color.green, opacity=0.4)
 
+##
+##X = np.arange(-50,50,1)
+##V = []
+##for x in X:
+##    V.append(velocity(x))
+##plt.plot(X,V)
+##plt.show()
+    
+screen = display(title='Root Development Model', width=640, height=720, autoscale = True, center = (0,7,0))
+root_shadow = cone(pos=(0,50,0), axis=(0,-75,0),radius=10, material=materials.rough, color=color.green, opacity=0.4)
 
   
 root = Tissue()
 
 for i in range(10000):
-    root.grow(0.1,0,-5,0,0.35,1,0)
-    rate(75)
+    root.grow(0.07,0,-5,0,0,0.1,0)
+    rate(30)
 '''   
 Go = True                           #CONTINUOUS RUNNING (slightly more cpu usage)
 while Go == True:
@@ -115,6 +137,13 @@ if cell.c.pos[1] == 7:
 
 
                                                                     possible use of ellipsoids rather than spheres??? .... yep
+if cell.c.pos[1] > 3:                                   #rudimentary velocity change and cell growth              
+                v_y +=0.008
+                cell.c.length +=0.08   
+                cell.c.height += 0.01
+                cell.c.width += 0.01
+
+
 '''
 
 
