@@ -1,9 +1,9 @@
-
 from __future__ import division
 from visual import *
 import math
 import pylab as plt
 import numpy as np
+
 # Model paramters
 vmax = 400.     # maximum cell velocity
                 # data derived from Beemster and baskin
@@ -57,7 +57,7 @@ class Tissue():
                 cell.c.width += 0.01
                 pass
             '''
-            if cell.c.pos[1]> 48:                                    # when the y position reaches a specified value...
+            if cell.c.pos[1]> 72:                                    # when the y position reaches a specified value...
                 cell.clear()                                        # ...call the clear method which deletes the physical sphere...
                 del cell                                            # ...the cell object ...
                 del self.cell_list[i]                               # ...and the data in the list
@@ -65,7 +65,7 @@ class Tissue():
         self.t = self.t + deltat
         
 
-##
+
 ##X = np.arange(-50,50,1)
 ##V = []
 ##for x in X:
@@ -73,14 +73,13 @@ class Tissue():
 ##plt.plot(X,V)
 ##plt.show()
     
-screen = display(title='Root Development Model', width=640, height=720, autoscale = True, center = (0,7,0))
-root_shadow = cone(pos=(0,50,0), axis=(0,-75,0),radius=10, material=materials.rough, color=color.green, opacity=0.4)
+screen = display(title='Root Development Model', width=640, height=720, autoscale = False, center = (0,7,0))
+root_shadow = cylinder(pos=(0,0,0), axis=(0,75,0),radius=10, material=materials.rough, color=color.green, opacity=0.4)
 
   
 root = Tissue()
-
 for i in range(10000):
-    root.grow(0.07,0,-5,0,0,0.1,0)
+    root.grow(0.07,0,0,0,0,0.1,0)
     rate(30)
 '''   
 Go = True                           #CONTINUOUS RUNNING (slightly more cpu usage)
@@ -145,6 +144,3 @@ if cell.c.pos[1] > 3:                                   #rudimentary velocity ch
 
 
 '''
-
-
-
