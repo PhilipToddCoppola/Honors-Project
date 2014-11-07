@@ -27,9 +27,11 @@ Modelling assists the ability to predict how roots may overcome certain physical
 In essence, it allows the breeder to develop new crops that are more adapted to future climates before such events occur in the real world potentially forecasting food shortage and allowing genetic adaptions to transpire.
 By using computers rather than living samples, researches can input variables into the system to generate a result in possibly seconds rather than days if it was a living plant. This can significantly reduce costs and time wasted on waiting for results but still provide the necessary data to enhance crop yield.  
 
+Github Help
+====
 
-###installation
-**Github Control**
+###Navigating
+To access the code used for this project.
 
 ### Tests
 
