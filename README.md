@@ -30,8 +30,9 @@ By using computers rather than living samples, researches can input variables in
 Github Help
 ====
 
-###Navigating
-To access the code used for this project.
+###Navigation
+
+**Getting about**
 
 ### Tests
 
