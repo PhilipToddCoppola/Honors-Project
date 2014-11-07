@@ -24,16 +24,18 @@ class Cell():
         new_pos = current_pos + deltat*self.velocity(self.c.pos[1])*vector(v_x,v_y,v_z)
         self.c.pos = new_pos
         self.t = self.t + deltat
+    #grow the cells while touching the cells above and below it
     def elongate(self,deltat):
         Vf = self.velocity(self.c.pos[1] + (self.c.length/2)) #elongation stoppes after vmax on logistic curve. Need to keep it going.
         Vi = self.velocity(self.c.pos[1] - (self.c.length/2))
         Yf = (self.c.pos[1] + (self.c.length/2)) + Vf*deltat
         Yi = (self.c.pos[1] - (self.c.length/2)) + Vi*deltat
         self.c.length = (Yf - Yi)
-        self.c.pos[1] = (Yf+Yi)/2           
-
+        self.c.pos[1] = (Yf+Yi)/2
+        if Vi >=396.45:
+            pass
     def divide(self, deltat):
-        pass  
+      pass  
     #clear the cell object
     def clear(self):
         del self.c
@@ -71,3 +73,22 @@ class Tissue():
     def markers(self, deltat,m_y):
             marker = box(pos=(70,m_y,0), length = 5, width = 5, height = 1, color = color.orange, material = materials.rough)
             
+            
+            
+#create the environment
+screen = display(title='Root Development Model', width=640, height=940,
+                 autoscale = False, center = (0,100,0))
+root_shadow = cylinder(pos=(0,-100,0), axis=(0,2100,0),radius=37.5, material=materials.rough, color=color.green, opacity=0.4)
+meri_scale = curve(pos=[(75,0,0),(75,300,0)],color = color.blue) # 300 um meristem zone marker
+elong_scale = curve(pos=[(75,300,0),(75,750,0)], color = color.red) # 450um elongation zone marker
+
+#program runs
+root = Tissue()
+for i in range(10000):
+    root.grow(0.01,0,0,0,0,0.1,0,color.yellow)
+    rate(30)
+    if screen.mouse.clicked:
+        m = screen.mouse.getclick()
+        screen.center[1] += 100
+        if screen.center[1] > 2000:
+            screen.center[1] = 100
