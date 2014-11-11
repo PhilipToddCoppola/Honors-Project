@@ -36,9 +36,9 @@ Within the ROOT directory is 3 more folders. Raw source code is found in the "Ma
 
 If you wish to view all history of my code but are unsure how then please follow these steps:
 
-1. Navigate to the ROOT directory and click the small clock image on the [top right][img1].This will bring up all the commits to that directory.
-2. Clicking on the [small grey box][img2] beside the name of the commit will bring up a short description of the changes made.
-3. Clicking on the name itself will bring up a much more [detailed display][img3] of what has been changed.
+1. Navigate to the ROOT directory and click the small clock image on the top right.This will bring up all the commits to that directory. ![alt text][img1]
+2. Clicking on the small grey box beside the name of the commit will bring up a short description of the changes made. ![alt text][img2]
+3. Clicking on the name itself will bring up a much more detailed display of what has been changed.![alt text][img3]
 
 [img1]:http://i.imgur.com/Hnf3a3M.png
 [img2]:http://i.imgur.com/aTX4XI8.png
