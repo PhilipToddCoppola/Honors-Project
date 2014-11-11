@@ -34,9 +34,9 @@ Github Help
 
 Within the ROOT directory is 3 more folders. Raw source code is found in the "Main Code" directory while older test codes can be found in the appropriately named "Old Code" directory. The "Documentation" directory contains the Baskin et al 1998 paper where I got my data from,a logistic curve (figure 1) which is represents the velocity of my cells where they are located on the root, and finally a png image from my very early test on the vpython module.
 
-### Tests
+### Running The Script
 
-**How to run**
+Work is being done to implement a simple to run exe file to display the final product without the need to download and install any programs. In the meantime if you wish to run the code you will need to install [Python 2.7.x](https://www.python.org/downloads/ "Downloads Page") and the [vpython](http://vpython.org/contents/download_windows.html "vPython Download for Windows") Module
 
 ### Contributors
 
