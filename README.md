@@ -32,7 +32,7 @@ Github Help
 
 ###Navigation
 
-**Getting about**
+Within the ROOT directory is 3 more folders. Raw source code is found in the "Main Code" directory while older test codes can be found in the appropriately named "Old Code" directory. The "Documentation" directory contains the Baskin et al 1998 paper where I got my data from,a logistic curve (figure 1) which is represents the velocity of my cells where they are located on the root, and finally a png image from my very early test on the vpython module.
 
 ### Tests
 
