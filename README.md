@@ -16,6 +16,9 @@ I will develop a program based on the programming language python. Numerical com
 
 I have tested various 3D visualisation modules and have decided to use vPython for my project because it is more adapted to fast prototyping and is designed to work with NumPy effortlessly. I am currently exploring ways to control the shape of the objects to allow better parameterisation of the cell geometry. In the future, the program will implement cell movement, cell deformation and cell division. Data from the literature, or directly measured from data available on site, will be used. Application of this work includes the simulation of entire root meristems with biological processes such as gene expression, biochemical pathways or cell wall biophysics as factors driving the changes in cell architectures. Computational techniques such as Smooth Particle Hydrodynamics could be used to model such processes. Work would likely migrate this design to a compiled programing language such as C++ to gain speed and to use techniques such as multithreading. 
 
+Early Model Test of vPython: 
+![alt text](http://i.imgur.com/Fddxb7i.png?1 "Early Model Test")
+
 ### Why Model?
 
 The people of the world are becoming environmentally friendly. Agriculture is being urged more and more by the governments to use less damaging fertilisers and reduce the usage of water. However, this has a negative effect by reducing the output of crops and, in a world where the human population has surpassed 7 billion inhabitants, food shortage is an ever increasing likelihood. 
