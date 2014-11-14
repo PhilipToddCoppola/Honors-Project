@@ -1,3 +1,4 @@
+
 from classes import*
 
 #create the environment
@@ -11,7 +12,9 @@ root = Tissue()
 
 #Main Program Loop
 for i in range(10000):
-    root.grow(0.01,0,0,0,0,0.1,0,color.yellow)
+    root.grow(0.005,0,0,0,0,0.1,0,color.yellow)
+    root.grow(0.005,4,0,0,0,0.1,0,color.yellow)
+    
     rate(30)
     if screen.mouse.clicked:
         m = screen.mouse.getclick()
