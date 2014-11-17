@@ -1,20 +1,19 @@
-
 from __future__ import division
 from visual import*
 import math
 
 # Model paramters
 vmax = 400.     # maximum cell velocity
-                # data derived from Beemster and baskin
-                #1 python unit = 2um
-a = 1./150./2    # slope of the lgositic function
+                # data derived from Beemster and baskin 1998
+                # 1 python unit = 2um
+a = 1./150./2   # slope of the lgositic function
 b = 550         # offset of the logistic function
 #Create Cell Class
 class Cell():
     #parameters for the cell object
-    def __init__(self,p_x,p_y,p_z,rad, material, color): 
+    def __init__(self,p_x,p_y,p_z,rad, rad2  = 5, material = materials.rough, color = color.yellow): 
         position = vector(p_x,p_y,p_z)
-        self.c = ellipsoid(pos=position, axis=(0,1,0), length=rad, height=rad, width=rad, material = material, color = color, opacity=1)
+        self.c = ellipsoid(pos=position, axis=(0,1,0), length=rad, height=rad2, width=rad2, material = material, color = color, opacity=1)
         self.t = 0
     #logistic curve for cells velocity
     def velocity(self,x):
@@ -31,16 +30,20 @@ class Cell():
     
     #cells divide
     def divide(self,deltat):
-        if self.c.pos[1] > 20:
-            if int(self.t/deltat) % 1 == 0: #will standardise the time each cell divides
+        if self.c.pos[1] < 400 :
+            if self.c.length > 6: #will standardise the time each cell divides
                 old_cell_pos = self.c.pos[1]
                 new_cell_pos = ((self.c.length/2)/2) + old_cell_pos
-                old_cell_pos = ((self.c.length/2)/2) - old_cell_pos
+                old_cell_pos = -((self.c.length/2)/2) + old_cell_pos
                 new_cell_length = (self.c.length/2)                
                 self.c.pos[1] = old_cell_pos
                 self.c.length = new_cell_length
-                self.c = ellipsoid(pos=(0,new_cell_pos,0), axis = (0,1,0), length = new_cell_length, width = 5, height = 5,color = color.red)
-
+                c2 = Cell(self.c.pos[0],new_cell_pos,self.c.pos[2],new_cell_length, rad2 = 5, color = color.red)
+                return c2
+            else:
+                return None
+        else:
+            return None
                 #self.n = cell
     #grow the cells while touching the cells above and below it
     def elongate(self,deltat):
@@ -68,7 +71,7 @@ class Tissue():
     def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z,color):
         # New cells are being initiated
         if int(self.t/deltat) % 7 == 0:                            
-            cell = Cell(p_x,p_y,p_z,5.,materials.rough, color)
+            cell = Cell(p_x,p_y,p_z,5.,5,materials.rough, color)
             self.add_cell(cell)
 
 ##            print (self.cell_list)
@@ -78,7 +81,9 @@ class Tissue():
         for i in range(len(self.cell_list)-1, -1, -1):              
             cell = self.cell_list[i]                                
             cell.move(deltat,v_x,v_y,v_z)
-            cell.divide(deltat)
+            c2 = cell.divide(deltat)
+            if c2 != None:
+                self.add_cell(c2)
             cell.elongate(deltat)                             
             #delete information of the cell
 ##            if cell.c.pos < 400:
