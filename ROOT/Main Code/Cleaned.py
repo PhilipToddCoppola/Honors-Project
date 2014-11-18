@@ -3,14 +3,12 @@ from visual import*
 import math
 
 
-
 # Model paramters
 vmax = 420.     # maximum cell velocity
                 # data derived from Beemster and baskin 1998
                 # 1 python unit = 1um
 a = 1./210      # slope of the lgositic function
 b = 1100        # offset of the logistic function
-
 
 
 #Create Cell Class
@@ -43,7 +41,7 @@ class Cell():
                 new_cell_length = (self.c.length/2)                
                 self.c.pos[1] = old_cell_pos
                 self.c.length = new_cell_length
-                c2 = Cell(self.c.pos[0],new_cell_pos,self.c.pos[2],new_cell_length, rad2 = 10, color = color.red)
+                c2 = Cell(self.c.pos[0],new_cell_pos,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
                 return c2
             else:
                 return None
@@ -66,7 +64,6 @@ class Cell():
         del self.c
             
 
-
 #Create Tissue Class
 class Tissue():
 
@@ -82,7 +79,7 @@ class Tissue():
     def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z,color):
 
         # New cells are being initiated
-        if int(self.t/deltat) % 17 == 0:                            
+        if int(self.t/deltat) % 37 == 0:                            
             cell = Cell(p_x,p_y,p_z,10.,10,materials.rough, color)
             self.add_cell(cell)
 
@@ -101,8 +98,7 @@ class Tissue():
 
         # update time
         self.t = self.t + deltat
-
-           
+ 
 
 #create the environment
 screen = display(title='Root Development Model', width=640, height=940,
@@ -114,11 +110,10 @@ test_cell = ellipsoid(pos=(20,900,0), axis=(0,1,0), length=75, height=10, width=
 label = label(pos = test_cell.pos, text ='Cell Size Check of 75um', xoffset = 50,yoffset = 10, space=test_cell.width, border = 6, font='sans')
 
 
-
 #program runs
 root = Tissue()
 for i in range(10000):
-    root.grow(0.2,0,0,0,0,0.1,0,color.yellow)
+    root.grow(0.1,0,0,0,0,0.1,0,color.yellow)
     rate(30)
     if screen.mouse.clicked:
         m = screen.mouse.getclick()
