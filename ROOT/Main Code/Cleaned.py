@@ -1,3 +1,5 @@
+
+
 from __future__ import division
 from visual import*
 import math
@@ -7,8 +9,8 @@ import math
 vmax = 420.     # maximum cell velocity
                 # data derived from Beemster and baskin 1998
                 # 1 python unit = 1um
-a = 1./210      # slope of the lgositic function
-b = 1100        # offset of the logistic function
+a = 1./210.      # slope of the lgositic function
+b = 1100.        # offset of the logistic function
 
 
 #Create Cell Class
@@ -24,24 +26,17 @@ class Cell():
     def velocity(self,x):
         return vmax/(1. + math.exp(-a*(x-b)))
 
-    #Cell movement upwards
-    def move(self,deltat,v_x,v_y,v_z):
-        current_pos = self.c.pos
-        new_pos = current_pos + deltat*self.velocity(self.c.pos[1])*vector(v_x,v_y,v_z)
-        self.c.pos = new_pos
-        self.t = self.t + deltat
-
     #cells divide
     def divide(self,deltat):
-        if self.c.pos[1] < 400 :
-            if self.c.length > 15: #will standardise the time each cell divides
+        if self.c.pos[1] < 410 :
+            if self.c.length > 16: #will standardise the time each cell divides
                 old_cell_pos = self.c.pos[1]
-                new_cell_pos = ((self.c.length/2)/2) + old_cell_pos
-                old_cell_pos = (-(self.c.length/2)/2) + old_cell_pos
-                new_cell_length = (self.c.length/2)                
+                new_cell_pos = ((self.c.length/2.)/2.) + old_cell_pos
+                old_cell_pos = (-(self.c.length/2.)/2.) + old_cell_pos 
+                new_cell_length = (self.c.length/2.)                
                 self.c.pos[1] = old_cell_pos
                 self.c.length = new_cell_length
-                c2 = Cell(self.c.pos[0],new_cell_pos,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
+                c2 = Cell(self.c.pos[0],new_cell_pos-0.4,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
                 return c2
             else:
                 return None
@@ -50,14 +45,13 @@ class Cell():
 
     #grow the cells while touching the cells above and below it
     def elongate(self,deltat):
-        Vf = self.velocity(self.c.pos[1] + (self.c.length/2)) #elongation stoppes after vmax on logistic curve. Need to keep it going.
-        Vi = self.velocity(self.c.pos[1] - (self.c.length/2))
-        Yf = (self.c.pos[1] + (self.c.length/2)) + Vf*deltat
-        Yi = (self.c.pos[1] - (self.c.length/2)) + Vi*deltat
+        Vf = self.velocity(self.c.pos[1] + (self.c.length/2.)) #elongation stoppes after vmax on logistic curve. Need to keep it going.
+        Vi = self.velocity(self.c.pos[1] - (self.c.length/2.))
+        Yf = (self.c.pos[1] + (self.c.length/2.)) + Vf*deltat
+        Yi = (self.c.pos[1] - (self.c.length/2.)) + Vi*deltat
         self.c.length = (Yf - Yi)
-        self.c.pos[1] = (Yf+Yi)/2
-        if self.c.length > 75:
-            self.c.length == 75
+        self.c.pos[1] = (Yf+Yi)/2.
+        self.t = self.t + deltat
 
     #clear the cell object
     def clear(self):
@@ -79,18 +73,23 @@ class Tissue():
     def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z,color):
 
         # New cells are being initiated
-        if int(self.t/deltat) % 37 == 0:                            
+        if int(self.t/deltat) % 43 == 0:                            
             cell = Cell(p_x,p_y,p_z,10.,10,materials.rough, color)
             self.add_cell(cell)
 
         # Existing cells are moving
         for i in range(len(self.cell_list)-1, -1, -1):              
             cell = self.cell_list[i]                                
-            cell.move(deltat,v_x,v_y,v_z)
+
+            #movement and elongation of the cells
+            cell.elongate(deltat)
+
+            # cell division
             c2 = cell.divide(deltat)
             if c2 != None:
                 self.add_cell(c2)
-            cell.elongate(deltat)
+
+            # Remove cells that reach the boundaries
             if cell.c.pos[1] > 2000 - cell.c.length/2:                                    
                 cell.clear()
                 del cell                                            
@@ -113,8 +112,13 @@ label = label(pos = test_cell.pos, text ='Cell Size Check of 75um', xoffset = 50
 #program runs
 root = Tissue()
 for i in range(10000):
+    
+    #calls the grow method
     root.grow(0.1,0,0,0,0,0.1,0,color.yellow)
+    
     rate(30)
+    
+    #simple camera manipulation
     if screen.mouse.clicked:
         m = screen.mouse.getclick()
         screen.center[1] += 100
