@@ -1,5 +1,3 @@
-
-
 from __future__ import division
 from visual import*
 import math
@@ -31,12 +29,13 @@ class Cell():
         if self.c.pos[1] < 410 :
             if self.c.length > 16: #will standardise the time each cell divides
                 old_cell_pos = self.c.pos[1]
-                new_cell_pos = ((self.c.length/2.)/2.) + old_cell_pos
-                old_cell_pos = (-(self.c.length/2.)/2.) + old_cell_pos 
-                new_cell_length = (self.c.length/2.)                
-                self.c.pos[1] = old_cell_pos
+                old_length = self.c.length
+                new_cell_pos1 = old_length/4. + old_cell_pos #- self.velocity(old_cell_pos/old_length)
+                new_cell_pos2 = -old_length/4. + old_cell_pos
+                new_cell_length = old_length/2.
+                self.c.pos[1] = new_cell_pos2 
                 self.c.length = new_cell_length
-                c2 = Cell(self.c.pos[0],new_cell_pos-0.4,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
+                c2 = Cell(self.c.pos[0],new_cell_pos1,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
                 return c2
             else:
                 return None
@@ -73,7 +72,7 @@ class Tissue():
     def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z,color):
 
         # New cells are being initiated
-        if int(self.t/deltat) % 43 == 0:                            
+        if int(self.t/deltat) % 42 == 0:                            
             cell = Cell(p_x,p_y,p_z,10.,10,materials.rough, color)
             self.add_cell(cell)
 
@@ -83,17 +82,22 @@ class Tissue():
 
             #movement and elongation of the cells
             cell.elongate(deltat)
-
-            # cell division
-            c2 = cell.divide(deltat)
-            if c2 != None:
-                self.add_cell(c2)
-
-            # Remove cells that reach the boundaries
-            if cell.c.pos[1] > 2000 - cell.c.length/2:                                    
-                cell.clear()
-                del cell                                            
-                del self.cell_list[i]                               
+            
+            for i in range(len(self.cell_list)-1, -1, -1):
+                cell = self.cell_list[i] 
+                # cell division
+                c2 = cell.divide(deltat)
+                if c2 != None:
+                    self.add_cell(c2)
+                if cell.c.pos[1] > 2000 - cell.c.length/2:                                    
+                    cell.clear()
+                    del cell                                            
+                    del self.cell_list[i]
+##            # Remove cells that reach the boundaries
+##            if cell.c.pos[1] > 2000 - cell.c.length/2:                                    
+##                cell.clear()
+##                del cell                                            
+##                del self.cell_list[i]                               
 
         # update time
         self.t = self.t + deltat
