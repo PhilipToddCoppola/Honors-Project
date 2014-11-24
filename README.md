@@ -1,4 +1,4 @@
-Understanding root development, from cellular mechanisms, using Python and 3D particle based modelling 
+Utilising Python Programming to Build a 3D Particle Based Model of Root Development
 ======
 
 ### Background
