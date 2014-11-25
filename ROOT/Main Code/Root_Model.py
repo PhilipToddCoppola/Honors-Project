@@ -34,7 +34,7 @@ class Cell():
             dr = Init_DR
             return dr
         if self.c.pos[1] >= 410 and self.c.pos[1] <= 720:
-            dr = (BI_max - self.c.pos[1])/(BI_max-BI_min) *(Init_DR) #Bilinear Interpolation
+            dr = (BI_max - x)/(BI_max-BI_min) *(Init_DR) #Bilinear Interpolation
             return dr
         if self.c.pos[1] > 720:
             dr = 0.
@@ -42,7 +42,7 @@ class Cell():
 
     #Create Cells after division
     def divide(self,deltat):
-        if self.t >= self.divRate(self.c.pos[1]):   #need to inverse the interpolation so division happens less often the further away it gets from the QC
+        if self.t >= (self.divRate(self.c.pos[1])):   #need to inverse the interpolation so division happens less often the further away it gets from the QC
             old_cell_pos = self.c.pos[1]
             old_length = self.c.length
             new_cell_pos1 = old_length/4. + old_cell_pos
