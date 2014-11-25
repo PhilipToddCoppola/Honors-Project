@@ -1,15 +1,19 @@
+
 from __future__ import division
 from visual import*
 import math
 
 
 # Model paramters
-vmax = 420.     # maximum cell velocity
-                # data derived from Beemster and baskin 1998
-                # 1 python unit = 1um
-a = 1./210.      # slope of the lgositic function
-b = 1100.        # offset of the logistic function
+vmax = 420.         #Maximum cell velocity
+                    #Data derived from Beemster and Baskin 1998 paper
+                    #1 python unit = 1um
+a = 1./210.         #Slope of the lgositic function
+b = 1100.           #Offset of the logistic function
 
+BI_max = 720.       #Bilinear Inerpolation Max value
+BI_min = 410.       #Bilinear Interpolation Min Value
+Init_DR = 1./0.04   #Initial Division Rate taken from Beemster and Baskin 1998 paper
 
 #Create Cell Class
 class Cell():
@@ -24,23 +28,34 @@ class Cell():
     def velocity(self,x):
         return vmax/(1. + math.exp(-a*(x-b)))
 
-    #cells divide
+    #check cells position and how often they should divide
+    def divRate(self,x):
+        if self.c.pos[1] < 410:
+            dr = Init_DR
+            return dr
+        if self.c.pos[1] >= 410 and self.c.pos[1] <= 720:
+            dr = (BI_max - self.c.pos[1])/(BI_max-BI_min) *(Init_DR) #Bilinear Interpolation
+            return dr
+        if self.c.pos[1] > 720:
+            dr = 0.
+            return dr
+
+    #Create Cells after division
     def divide(self,deltat):
-        if self.c.pos[1] < 410 :
-            if self.c.length > 16: #will standardise the time each cell divides
-                old_cell_pos = self.c.pos[1]
-                old_length = self.c.length
-                new_cell_pos1 = old_length/4. + old_cell_pos #- self.velocity(old_cell_pos/old_length)
-                new_cell_pos2 = -old_length/4. + old_cell_pos
-                new_cell_length = old_length/2.
-                self.c.pos[1] = new_cell_pos2 
-                self.c.length = new_cell_length
-                c2 = Cell(self.c.pos[0],new_cell_pos1,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
-                return c2
-            else:
-                return None
+        if self.t >= self.divRate(self.c.pos[1]):   #need to inverse the interpolation so division happens less often the further away it gets from the QC
+            old_cell_pos = self.c.pos[1]
+            old_length = self.c.length
+            new_cell_pos1 = old_length/4. + old_cell_pos
+            new_cell_pos2 = -old_length/4. + old_cell_pos
+            new_cell_length = old_length/2.
+            self.c.pos[1] = new_cell_pos2 
+            self.c.length = new_cell_length
+            c2 = Cell(self.c.pos[0],new_cell_pos1,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
+            self.t=0
+            return c2
         else:
             return None
+
 
     #grow the cells while touching the cells above and below it
     def elongate(self,deltat):
@@ -82,17 +97,21 @@ class Tissue():
 
             #movement and elongation of the cells
             cell.elongate(deltat)
-            
+
             for i in range(len(self.cell_list)-1, -1, -1):
                 cell = self.cell_list[i] 
                 # cell division
                 c2 = cell.divide(deltat)
                 if c2 != None:
                     self.add_cell(c2)
+
+                # Remove cells that reach the boundaries
                 if cell.c.pos[1] > 2000 - cell.c.length/2:                                    
                     cell.clear()
                     del cell                                            
                     del self.cell_list[i]
+
+
 ##            # Remove cells that reach the boundaries
 ##            if cell.c.pos[1] > 2000 - cell.c.length/2:                                    
 ##                cell.clear()
@@ -101,27 +120,26 @@ class Tissue():
 
         # update time
         self.t = self.t + deltat
- 
 
+           
 #create the environment
 screen = display(title='Root Development Model', width=640, height=940,
                  autoscale = False, center = (0,100,0))
 root_shadow = cylinder(pos=(0,-100,0), axis=(0,2100,0),radius=75, material=materials.rough, color=color.green, opacity=0.4)
 meri_scale = curve(pos=[(100,0,0),(100,300,0)],color = color.blue) # 300 um meristem zone marker
 elong_scale = curve(pos=[(100,300,0),(100,750,0)], color = color.red) # 450um elongation zone marker
-test_cell = ellipsoid(pos=(20,900,0), axis=(0,1,0), length=75, height=10, width=10, material = materials.rough, color = color.red, opacity=1)
-label = label(pos = test_cell.pos, text ='Cell Size Check of 75um', xoffset = 50,yoffset = 10, space=test_cell.width, border = 6, font='sans')
+#test_cell = ellipsoid(pos=(20,900,0), axis=(0,1,0), length=75, height=10, width=10, material = materials.rough, color = color.red, opacity=1)
+#label = label(pos = test_cell.pos, text ='Cell Size Check of 75um', xoffset = 50,yoffset = 10, space=test_cell.width, border = 6, font='sans')
+#time_scale = curve(pos=[(100,900,0),(100,1100,0)],color = color.orange) # 300 um meristem zone marker
 
 
 #program runs
 root = Tissue()
 for i in range(10000):
-    
     #calls the grow method
     root.grow(0.1,0,0,0,0,0.1,0,color.yellow)
-    
     rate(30)
-    
+
     #simple camera manipulation
     if screen.mouse.clicked:
         m = screen.mouse.getclick()
