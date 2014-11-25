@@ -19,4 +19,7 @@ V = []
 for x in X:
     V.append(velocity(x))
 plt.plot(X,V)
+plt.axis([-500,3000,0,450])
+plt.ylabel('Velocity (um per Hour)')
+plt.xlabel('Distance from Quiescent Center (um)')
 plt.show()
