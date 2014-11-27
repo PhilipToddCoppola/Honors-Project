@@ -9,7 +9,7 @@ import math
 
 BI_max = 720.       #Bilinear Inerpolation Max value
 BI_min = 410.       #Bilinear Interpolation Min Value
-Init_DR = 1./0.04   #Division Rate per Hour
+Init_DR = 1./0.04   #Division Rate(dr) per Hour
 
 
 def divRate(x):

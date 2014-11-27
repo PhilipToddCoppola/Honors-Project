@@ -1,4 +1,3 @@
-
 from __future__ import division
 from visual import*
 import math
@@ -42,7 +41,9 @@ class Cell():
 
     #Create Cells after division
     def divide(self,deltat):
-        if self.t >= (self.divRate(self.c.pos[1])):   #need to inverse the interpolation so division happens less often the further away it gets from the QC
+##        print("t=",self.t)
+##        print("d=",self.divRate(self.c.pos[1])) 
+        if self.t >= self.divRate(self.c.pos[1]):   #need to inverse the interpolation so division happens less often the further away it gets from the QC
             old_cell_pos = self.c.pos[1]
             old_length = self.c.length
             new_cell_pos1 = old_length/4. + old_cell_pos
@@ -85,11 +86,12 @@ class Tissue():
         self.cell_list.append(cell)
 
     def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z,color):
-
         # New cells are being initiated
-        if int(self.t/deltat) % 42 == 0:                            
-            cell = Cell(p_x,p_y,p_z,10.,10,materials.rough, color)
-            self.add_cell(cell)
+        if int(self.t/deltat) % 42 == 0:
+            for c in range(7):
+                cell = Cell(p_x,p_y,p_z,10.,10,materials.rough, color)
+                self.add_cell(cell)
+                p_x = p_x+10
 
         # Existing cells are moving
         for i in range(len(self.cell_list)-1, -1, -1):              
@@ -110,14 +112,7 @@ class Tissue():
                     cell.clear()
                     del cell                                            
                     del self.cell_list[i]
-
-
-##            # Remove cells that reach the boundaries
-##            if cell.c.pos[1] > 2000 - cell.c.length/2:                                    
-##                cell.clear()
-##                del cell                                            
-##                del self.cell_list[i]                               
-
+                    
         # update time
         self.t = self.t + deltat
 
@@ -128,16 +123,13 @@ screen = display(title='Root Development Model', width=640, height=940,
 root_shadow = cylinder(pos=(0,-100,0), axis=(0,2100,0),radius=75, material=materials.rough, color=color.green, opacity=0.4)
 meri_scale = curve(pos=[(100,0,0),(100,300,0)],color = color.blue) # 300 um meristem zone marker
 elong_scale = curve(pos=[(100,300,0),(100,750,0)], color = color.red) # 450um elongation zone marker
-#test_cell = ellipsoid(pos=(20,900,0), axis=(0,1,0), length=75, height=10, width=10, material = materials.rough, color = color.red, opacity=1)
-#label = label(pos = test_cell.pos, text ='Cell Size Check of 75um', xoffset = 50,yoffset = 10, space=test_cell.width, border = 6, font='sans')
-#time_scale = curve(pos=[(100,900,0),(100,1100,0)],color = color.orange) # 300 um meristem zone marker
 
 
 #program runs
 root = Tissue()
 for i in range(10000):
     #calls the grow method
-    root.grow(0.1,0,0,0,0,0.1,0,color.yellow)
+    root.grow(0.1,-30,0,0,0,0.1,0,color.yellow)
     rate(30)
 
     #simple camera manipulation
