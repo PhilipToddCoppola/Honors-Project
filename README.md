@@ -1,4 +1,4 @@
-Utilising Python Programming to Build a 3D Particle Based Model of Root Development
+Utilising Python Programming to Build a 3D Particle Based Model of a Developing Root
 ======
 
 ### Background
