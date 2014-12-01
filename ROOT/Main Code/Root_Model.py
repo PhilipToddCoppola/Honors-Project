@@ -110,7 +110,6 @@ class Cell():
 ##                                                               ##
 ###################################################################
 
-            
 
 
 ##############################
@@ -164,7 +163,14 @@ class Tissue():
         # update time
         self.t = self.t + deltat
 
-          
+
+
+##############################
+##                          ##
+##    Main Program Loop     ##
+##                          ##
+##############################          
+
 #create the environment
 screen = display(title='Root Development Model', width=640, height=940, autoscale = False, center = (0,100,0))
 root_shadow = cylinder(pos=(0,-100,0), axis=(0,2100,0),radius=75, material=materials.rough, color=color.green, opacity=0.4)
