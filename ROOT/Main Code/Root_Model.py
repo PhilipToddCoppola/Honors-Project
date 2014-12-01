@@ -1,20 +1,38 @@
 from __future__ import division
 from visual import*
 import math
+import random as rd
+
+##############################
+##                          ##
+##      Model Paramters     ##
+##                          ##
+##############################
 
 
-# Model paramters
+
 vmax = 420.         #Maximum cell velocity
                     #Data derived from Beemster and Baskin 1998 paper
                     #1 python unit = 1um
 a = 1./210.         #Slope of the lgositic function
 b = 1100.           #Offset of the logistic function
 
-BI_max = 720.       #Bilinear Inerpolation Max value
-BI_min = 410.       #Bilinear Interpolation Min Value
-Init_DR = 1./0.04   #Initial Division Rate taken from Beemster and Baskin 1998 paper
+BI_max = 720.       #Linear Inerpolation Max value
+BI_min = 410.       #Linear Interpolation Min Value
+Init_DR = 0.04      #Initial Division Rate taken from Beemster and Baskin 1998 paper
+dt = 0.1            #Growth increment (h)
+rt = 150            #Frames per second
 
-#Create Cell Class
+DATA = []           #Empty List where cell sizes were inserted and checked
+
+
+
+##############################
+##                          ##
+##        Cell Class        ##
+##                          ##
+##############################
+
 class Cell():
 
     #parameters for the cell object
@@ -22,6 +40,9 @@ class Cell():
         position = vector(p_x,p_y,p_z)
         self.c = ellipsoid(pos=position, axis=(0,1,0), length=rad, height=rad2, width=rad2, material = material, color = color, opacity=1)
         self.t = 0
+        self.next_div = 0
+        if self.divRate(self.c.pos[1])>0:
+            self.next_div = (1./self.divRate(self.c.pos[1]))*(1.+0.3*(rd.random()-0.5))
 
     #logistic curve for cells velocity
     def velocity(self,x):
@@ -32,35 +53,36 @@ class Cell():
         if self.c.pos[1] < 410:
             dr = Init_DR
             return dr
-        if self.c.pos[1] >= 410 and self.c.pos[1] <= 720:
-            dr = (BI_max - x)/(BI_max-BI_min) *(Init_DR) #Bilinear Interpolation
+        if self.c.pos[1] >= 410 and self.c.pos[1] <= 715:
+            dr = (BI_max - x)/(BI_max-BI_min) *(Init_DR) #linear Interpolation
             return dr
-        if self.c.pos[1] > 720:
+        if self.c.pos[1] > 715:
             dr = 0.
             return dr
 
-    #Create Cells after division
+    #Cells divide based on time rather than size.
     def divide(self,deltat):
-##        print("t=",self.t)
-##        print("d=",self.divRate(self.c.pos[1])) 
-        if self.t >= self.divRate(self.c.pos[1]):   #need to inverse the interpolation so division happens less often the further away it gets from the QC
-            old_cell_pos = self.c.pos[1]
-            old_length = self.c.length
-            new_cell_pos1 = old_length/4. + old_cell_pos
-            new_cell_pos2 = -old_length/4. + old_cell_pos
-            new_cell_length = old_length/2.
-            self.c.pos[1] = new_cell_pos2 
-            self.c.length = new_cell_length
-            c2 = Cell(self.c.pos[0],new_cell_pos1,self.c.pos[2],new_cell_length, rad2 = 10, color = color.orange)
-            self.t=0
-            return c2
+        if self.next_div>0:
+            if self.t >= self.next_div:  
+                old_cell_pos = self.c.pos[1]
+                old_length = self.c.length
+                new_cell_pos1 = old_length/4. + old_cell_pos
+                new_cell_pos2 = -old_length/4. + old_cell_pos
+                new_cell_length = old_length/2.
+                self.c.pos[1] = new_cell_pos2 
+                self.c.length = new_cell_length
+                c2 = Cell(self.c.pos[0],new_cell_pos1,self.c.pos[2],new_cell_length, rad2 = 10, color = color.yellow)
+                self.t=0
+                return c2
+            else:
+                return None
         else:
             return None
 
 
-    #grow the cells while touching the cells above and below it
+    #Movement and elongation of the Cells in relation to cells above and below. 
     def elongate(self,deltat):
-        Vf = self.velocity(self.c.pos[1] + (self.c.length/2.)) #elongation stoppes after vmax on logistic curve. Need to keep it going.
+        Vf = self.velocity(self.c.pos[1] + (self.c.length/2.))
         Vi = self.velocity(self.c.pos[1] - (self.c.length/2.))
         Yf = (self.c.pos[1] + (self.c.length/2.)) + Vf*deltat
         Yi = (self.c.pos[1] - (self.c.length/2.)) + Vi*deltat
@@ -68,12 +90,35 @@ class Cell():
         self.c.pos[1] = (Yf+Yi)/2.
         self.t = self.t + deltat
 
+
     #clear the cell object
     def clear(self):
         del self.c
+
+
+###################################################################
+##                                                               ##
+##  Function Used to print the length of a cell to check against ##   
+##  the Beemster and Baskin 1998 paper. (No longer needed)       ##                               
+##                                                               ##
+##    def print_length(self):                                    ##
+##            DATA.append([self.c.pos[1],self.c.length])         ##
+##            f = open("data.csv",'w')                           ##
+##            for row in DATA:                                   ##
+##                f.write(str(row[0]) + "," + str(row[1]) +"\n") ##
+##            f.close()                                          ##
+##                                                               ##
+###################################################################
+
             
 
-#Create Tissue Class
+
+##############################
+##                          ##
+##      Tissue Class        ##
+##                          ##
+##############################
+
 class Tissue():
 
     #initialises the list where cells will be saved.
@@ -86,10 +131,13 @@ class Tissue():
         self.cell_list.append(cell)
 
     def grow(self,deltat,p_x,p_y,p_z, v_x,v_y,v_z,color):
-        # New cells are being initiated
+
+        # New cells are initiated
         if int(self.t/deltat) % 42 == 0:
-            for c in range(7):
-                cell = Cell(p_x,p_y,p_z,10.,10,materials.rough, color)
+            R = [rd.random(),rd.random(),rd.random(),rd.random()]
+            for c in range(1):
+                r = (R[c])*0.2
+                cell = Cell(p_x,p_y-10.*r*0.5,p_z,10.*(1.+r),10.,materials.rough, color)
                 self.add_cell(cell)
                 p_x = p_x+10
 
@@ -97,11 +145,11 @@ class Tissue():
         for i in range(len(self.cell_list)-1, -1, -1):              
             cell = self.cell_list[i]                                
 
-            #movement and elongation of the cells
-            cell.elongate(deltat)
-
+            #Call the movement and elongation methods
+            cell.elongate(deltat) 
             for i in range(len(self.cell_list)-1, -1, -1):
                 cell = self.cell_list[i] 
+
                 # cell division
                 c2 = cell.divide(deltat)
                 if c2 != None:
@@ -116,21 +164,20 @@ class Tissue():
         # update time
         self.t = self.t + deltat
 
-           
+          
 #create the environment
-screen = display(title='Root Development Model', width=640, height=940,
-                 autoscale = False, center = (0,100,0))
+screen = display(title='Root Development Model', width=640, height=940, autoscale = False, center = (0,100,0))
 root_shadow = cylinder(pos=(0,-100,0), axis=(0,2100,0),radius=75, material=materials.rough, color=color.green, opacity=0.4)
-meri_scale = curve(pos=[(100,0,0),(100,300,0)],color = color.blue) # 300 um meristem zone marker
-elong_scale = curve(pos=[(100,300,0),(100,750,0)], color = color.red) # 450um elongation zone marker
+meri_scale = curve(pos=[(100,0,0),(100,300,0)],color = color.blue)
+elong_scale = curve(pos=[(100,300,0),(100,750,0)], color = color.red)
 
 
 #program runs
 root = Tissue()
 for i in range(10000):
     #calls the grow method
-    root.grow(0.1,-30,0,0,0,0.1,0,color.yellow)
-    rate(30)
+    root.grow(dt,-30,0,0,0,0.1,0,color.yellow)
+    rate(rt)
 
     #simple camera manipulation
     if screen.mouse.clicked:
