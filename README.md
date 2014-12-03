@@ -53,10 +53,7 @@ Work is being done to implement a simple to run exe file to display the final pr
 
 ### Contributors
 
-**Thanks**
-
-
-
+With thanks to Dr Lionel Dupuy for constant guidance throughout the project and to Grant Johnstone and Scott McCrimmon for keeping me sane and caffeinated from start to end. 
 
 
 Licence
