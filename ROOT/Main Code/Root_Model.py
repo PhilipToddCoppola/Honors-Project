@@ -1,3 +1,5 @@
+
+
 from __future__ import division
 from visual import*
 import math
@@ -134,8 +136,8 @@ class Tissue():
         # New cells are initiated
         if int(self.t/deltat) % 42 == 0:
             R = [rd.random(),rd.random(),rd.random(),rd.random()]
-            for c in range(1):
-                r = (R[c])*0.2
+            for c in range(3):
+                r = (R[c]-0.5)*0.2
                 cell = Cell(p_x,p_y-10.*r*0.5,p_z,10.*(1.+r),10.,materials.rough, color)
                 self.add_cell(cell)
                 p_x = p_x+10
@@ -182,7 +184,7 @@ elong_scale = curve(pos=[(100,300,0),(100,750,0)], color = color.red)
 root = Tissue()
 for i in range(10000):
     #calls the grow method
-    root.grow(dt,-30,0,0,0,0.1,0,color.yellow)
+    root.grow(dt,-10,0,0,0,0.1,0,color.yellow)
     rate(rt)
 
     #simple camera manipulation
