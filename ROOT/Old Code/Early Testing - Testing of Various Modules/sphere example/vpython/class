@@ -1,0 +1,9 @@
+from visual import *
+
+cyan = color.cyan
+red = color.red
+blue = color.blue
+
+class CreateSphere(x,y,z,radiusnum,colour):
+    sphere(pos=vector(x,y,z),radius=radiusnum,color=colour)
+

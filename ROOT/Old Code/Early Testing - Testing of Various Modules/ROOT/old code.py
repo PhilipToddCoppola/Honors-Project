@@ -1,6 +1,6 @@
 from visual import *
   
-screen = display(title='Root Development Model', width=640, height=720,center=(0,8.5,0))
+screen = display(title='Root Development Model', width=640, height=720,center=(0,-3,0))
 
 line = curve(x=arange(0,7.2,0.1), radius= 3)
 line.color= color.green
@@ -22,23 +22,16 @@ meristem = sphere(pos = (0,-5,0),radius = 1.5, color=color.yellow)
 meristem2= sphere(pos = (0,-5,0),radius = 1.5, color=color.yellow)
 meristem3= sphere(pos = (0,-5,0),radius = 1.5, color=color.yellow)
 
-meristem.velocity = vector(0,1,0)
-meristem2.velocity = vector(0,1,0)
-meristem3.velocity = vector(0,1,0)
+meristem2.velocity = vector(1,1,0)
+meristem3.velocity = vector(-1,1,0)
 
-deltat=0.05
+deltat=0.005
 t=0
 
-while t < 27.7:
-    meristem.pos = meristem.pos + (meristem.velocity*deltat)
+while t < 4:
     meristem2.pos = meristem2.pos + (meristem2.velocity*deltat)
     meristem3.pos = meristem3.pos + (meristem3.velocity*deltat)
-    if meristem.pos[1] > 5:
-        meristem2.velocity = vector (0,0.85,0)
-        meristem3.velocity = vector (0,1.15,0)
-    if meristem.pos[1] > 10:
-        meristem2.velocity = vector (0,1,0)
-        meristem3.velocity = vector (0,1,0) 
+
     t = t+deltat
 
     rate(100)
