@@ -7,7 +7,7 @@ import numpy as np
 import pylab as plt
 import math
 
-vmax = 445.     
+vmax = 420.     
 a = 1./210.
 b = 1100  
 
