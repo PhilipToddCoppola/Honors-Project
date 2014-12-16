@@ -11,7 +11,7 @@ import random as rd
 
 
 
-vmax = 420.         #Maximum cell velocity
+vmax = 445.         #Maximum cell velocity
                     #Data derived from Beemster and Baskin 1998 paper
                     #1 python unit = 1um
 a = 1./210.         #Slope of the lgositic function
